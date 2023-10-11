@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 import cmd
+from models.base_model import BaseModels
+
 """script to impliment the console"""
 
 class HBNBCommand(cmd.Cmd):
@@ -18,10 +20,14 @@ class HBNBCommand(cmd.Cmd):
         """Creates a new instance of BaseModel, saves it (to the JSON file) and prints the id"""
         if not cls_name:
             print("** class name missing **")
+
         elif cls_name not in globals() or not isinstance(globals()[cls_name], type):
             print(f"Error: Class '{cls_name}' does not exist.")
+
         else:
-            print(f"creates an instance {cls_name}")
+            new = BaseModel()
+            new.save()
+            print("{}".format(new.id))
 
     def do_show(self, cls_name):
         """Prints the string representation of an instance based on the class name and id"""
@@ -30,8 +36,10 @@ class HBNBCommand(cmd.Cmd):
     def do_destroy(self, args):
         """Deletes an instance based on the class name and id (save the change into the JSON file)"""
         args = args.split()
+
         if not args:
             print("** class name missing **")
+
         elif len(args) < 2:
             print("** instance id missing **")
 
@@ -39,8 +47,10 @@ class HBNBCommand(cmd.Cmd):
             cls_name, user_id = args[0], args[1]
             if cls_name not in globals() or not isinstance(globals()[cls_name], type):
                 print("** class doesn't exist **")
+
             elif user_id not in globals() or not isinstance(globals()[user_id], type):
                 print("** no instance found **")
+
             else:
                 print(f"deletes {cls_name} with id {id}")
 
@@ -51,20 +61,22 @@ class HBNBCommand(cmd.Cmd):
     def do_update(self, args):
         """ Updates an instance based on the class name and id by adding or updating attribute (save the change into the JSON file)."""
         args = args.split()
-        cls_name, id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
-        if cls_name is None:
+
+        if not args:
             print("** class name missing **")
 
-        if id is None:
+        elif len(args) < 2:
             print("** instance id missing **")
 
-        if attribute_name is None:
+        elif len(args) < 3:
             print("** attribute name missing **")
 
-        if attribute_value is None:
+        elif len(args) < 4:
             print("** value missing **")
 
-        print(f"update {cls_name} with id {id} {attribute_name} of value {attribute_value}")
+        else:
+            cls_name, id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
+            print(f"update {cls_name} with id {id} {attribute_name} of value {attribute_value}")
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

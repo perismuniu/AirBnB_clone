@@ -1,6 +1,13 @@
 #!/usr/bin/python3
+
 import cmd
+from models.amenity import Amenity
 from models.base_model import BaseModel
+from models.city import City
+from models.place import Place
+from models.review import Review
+from models.state import State
+from models.user import User
 
 """script to impliment the console"""
 
@@ -15,6 +22,9 @@ class HBNBCommand(cmd.Cmd):
     def do_EOF(self):
         """End of file"""
         return
+    def emptyline(self):
+        """prevents repetition of the previous command if no command is passed"""
+        pass
 
     def do_create(self, cls_name):
         """Creates a new instance of BaseModel, saves it (to the JSON file) and prints the id"""
@@ -110,9 +120,19 @@ class HBNBCommand(cmd.Cmd):
         elif len(args) < 4:
             print("** value missing **")
 
+        elif len(args) > 4:
+            print("too many arguments")
+
         else:
-            cls_name, id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
-            print(f"update {cls_name} with id {id} {attribute_name} of value {attribute_value}")
+             cls_name, id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
+             instance_var_name = "{}.{}".format(cls_name, id)
+             if instance_var_name in globals():
+                 instance = globals()[instance_var_name]
+                 setattr(instance, attribute_name, attribute_value)
+                 instance.save()
+                 print(instance)
+             else:
+                 print("** no instance found **")
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

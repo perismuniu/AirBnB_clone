@@ -21,6 +21,4 @@ class User(BaseModel):
     def __str__(self):
         """Return a string representation of the User object."""
 
-        return "User(email='{}', password='{}', first_name='{}',
-                     last_name='{}')".format(self.email, self.password,
-                                             self.first_name, self.last_name)
+        return "User(email='{}', password='{}', first_name='{}', last_name='{}')".format(self.email, self.password, self.first_name, self.last_name)

@@ -15,9 +15,12 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
     """class to create the commandline using cmd"""
 
-    def do_quit(self, commands):
+    def do_quit(self, command):
         """Quit command to exit the program"""
         return True
+
+    def do_example(self, command):
+        print(globals())
 
     def do_EOF(self):
         """End of file"""
@@ -35,9 +38,9 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
 
         else:
-            new = BaseModel()
-            new.save()
-            print("{}".format(new.id))
+            new_instance = globals()[cls_name]()
+            new_instance.save()
+            print("{}".format(new_instance.id))
 
     @staticmethod
     def find_with_id(cls_name, user_id):
@@ -67,7 +70,8 @@ class HBNBCommand(cmd.Cmd):
             else:
                 value = __class__.find_with_id(cls_name, user_id)
                 if value is None:
-                    print("** no instance found **")
+                    #print("** no instance found **")
+                    print(value)
                 else:
                     print(value)
 
@@ -91,14 +95,18 @@ class HBNBCommand(cmd.Cmd):
                 print("** no instance found **")
 
             else:
-                value = __class__.find_with_id(cls_name, user_id)
-                del value
+                instance_var_name = "{}.{}".format(cls_name, user_id)
+                if instance_var_name in globals():
+                    del globals()[instance_var_name]
+                    print("Instance deleted.")
+                else:
+                    print("** no instance found **")
 
     def do_all(self, cls_name):
         """Prints all string representation of all instances based or not on the class name."""
         all_instances = [obj for obj in globals().values() if isinstance(obj, type) and issubclass(obj, BaseModel)]
         if cls_name:
-            all_instances = [obj for obj in all_instances if obj.__name__ == cls_name]
+            all_instances = [obj for obj in all_instances if obj.__class__.__name__ == cls_name]
             print(all_instances)
 
         else:

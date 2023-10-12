@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 """ Defines the BaseModel class"""
 
+import models
 import uuid
 from datetime import datetime
-from models import storage
 
 
 class BaseModel:
@@ -33,13 +33,15 @@ class BaseModel:
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
 
+            models.storage.new(self)
+
     def save(self):
         """
         Updates the 'updated_at' attribute with current date time
         and saves to the JSON file.
         """
         self.updated_at = datetime.now()
-        storage.save()
+        models.storage.save()
 
     def to_dict(self):
         """
@@ -62,11 +64,9 @@ class BaseModel:
             class_name = data['__class__']
             if class_name == cls.__name__:
                 if 'created_at' in data:
-                    data['created_at'] = datetime.strptime(
-                            data['created_at'], '%Y-%m-%dT%H:%M:%S.%f')
+                    data['created_at'] = data['created_at']
                 if 'updated_at' in data:
-                    data['updated_at'] = datetime.strptime(
-                            data['updated_at'], '%Y-%m-%dT%H:%M:%S.%f')
+                    data['updated_at'] = data['updated_at']
                 return cls(**data)
         return None
 

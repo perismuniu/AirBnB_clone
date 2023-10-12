@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 import cmd
-from models.base_model import BaseModels
+from models.base_model import BaseModel
 
 """script to impliment the console"""
 
@@ -22,16 +22,45 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
 
         elif cls_name not in globals() or not isinstance(globals()[cls_name], type):
-            print(f"Error: Class '{cls_name}' does not exist.")
+            print("** class doesn't exist **")
 
         else:
             new = BaseModel()
             new.save()
             print("{}".format(new.id))
 
-    def do_show(self, cls_name):
+    @staticmethod
+    def find_with_id(cls_name, user_id):
+        """finds an instance based on the id"""
+        for key, value in globals().items():
+            if isinstance(value, type) and issubclass(value, BaseModel):
+                if key != cls_name:
+                    continue
+                instance_var_name = f"{key}.{user_id}"
+                if instance_var_name in globals():
+                    return globals()[instance_var_name]
+        return None
+
+    def do_show(self, args):
         """Prints the string representation of an instance based on the class name and id"""
-        print(f"shows the instance {cls_name}")
+        args = args.split()
+        if not args:
+            print("** class name missing **")
+        elif len(args) < 2:
+            print("** instance id missing **")
+
+        else:
+            cls_name, user_id = args[0], args[1]
+            if cls_name not in globals() or not isinstance(globals()[cls_name], type):
+                print("** class doesn't exist **")
+
+            else:
+                value = __class__.find_with_id(cls_name, user_id)
+                if value is None:
+                    print("** no instance found **")
+                else:
+                    print(value)
+
 
     def do_destroy(self, args):
         """Deletes an instance based on the class name and id (save the change into the JSON file)"""
@@ -52,11 +81,18 @@ class HBNBCommand(cmd.Cmd):
                 print("** no instance found **")
 
             else:
-                print(f"deletes {cls_name} with id {id}")
+                value = __class__.find_with_id(cls_name, user_id)
+                del value
 
     def do_all(self, cls_name):
         """Prints all string representation of all instances based or not on the class name."""
-        print(f"prints instances of {cls_name}")
+        all_instances = [obj for obj in globals().values() if isinstance(obj, type) and issubclass(obj, BaseModel)]
+        if cls_name:
+            all_instances = [obj for obj in all_instances if obj.__name__ == cls_name]
+            print(all_instances)
+
+        else:
+            print("No instance found")
 
     def do_update(self, args):
         """ Updates an instance based on the class name and id by adding or updating attribute (save the change into the JSON file)."""

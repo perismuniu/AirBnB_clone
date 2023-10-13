@@ -11,6 +11,7 @@ from models.user import User
 
 """script to impliment the console"""
 
+
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
     """class to create the commandline using cmd"""
@@ -25,6 +26,7 @@ class HBNBCommand(cmd.Cmd):
     def do_EOF(self):
         """End of file"""
         return
+
     def emptyline(self):
         """prevents repetition of the previous command if no command is passed"""
         pass
@@ -73,7 +75,6 @@ class HBNBCommand(cmd.Cmd):
                     print("** no instance found **")
                 else:
                     print(value)
-
 
     def do_destroy(self, args):
         """Deletes an instance based on the class name and id (save the change into the JSON file)"""
@@ -131,15 +132,16 @@ class HBNBCommand(cmd.Cmd):
             print("too many arguments")
 
         else:
-             cls_name, id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
-             instance_var_name = "{}.{}".format(cls_name, id)
-             if instance_var_name in globals():
-                 instance = globals()[instance_var_name]
-                 setattr(instance, attribute_name, attribute_value)
-                 instance.save()
-                 print(instance)
-             else:
-                 print("** no instance found **")
+            cls_name, id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
+            instance_var_name = "{}.{}".format(cls_name, id)
+            if instance_var_name in globals():
+                instance = globals()[instance_var_name]
+                setattr(instance, attribute_name, attribute_value)
+                instance.save()
+                print(instance)
+            else:
+                print("** no instance found **")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

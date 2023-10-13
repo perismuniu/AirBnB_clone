@@ -70,8 +70,7 @@ class HBNBCommand(cmd.Cmd):
             else:
                 value = __class__.find_with_id(cls_name, user_id)
                 if value is None:
-                    #print("** no instance found **")
-                    print(value)
+                    print("** no instance found **")
                 else:
                     print(value)
 

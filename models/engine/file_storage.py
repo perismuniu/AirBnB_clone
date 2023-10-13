@@ -2,6 +2,12 @@
 """ Defines the FileStorage class"""
 
 import json
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 from models.base_model import BaseModel
 
 
@@ -39,4 +45,4 @@ class FileStorage:
                     obj = eval(class_name).from_dict(value)
                     FileStorage.__objects[key] = obj
         except FileNotFoundError:
-            return
+            pass

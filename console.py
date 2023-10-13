@@ -15,6 +15,11 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
     """class to create the commandline using cmd"""
 
+    def __init__(self):
+        """initilisation phase"""
+        super().__init__()
+        self.my_instances = {}
+
     def do_quit(self, command):
         """Quit command to exit the program"""
         return True
@@ -40,7 +45,14 @@ class HBNBCommand(cmd.Cmd):
         else:
             new_instance = globals()[cls_name]()
             new_instance.save()
+            instances_name = "my_instance_{}".format(len(self.my_instances))
+            self.my_instances[instances_name] = new_instance
+            print(new_instance)
+            for key, value in self.my_instances.items():
+                if value == new_instance:
+                    print(value)
             print("{}".format(new_instance.id))
+            print(self.my_instances)
 
     @staticmethod
     def find_with_id(cls_name, user_id):
@@ -68,12 +80,20 @@ class HBNBCommand(cmd.Cmd):
                 print("** class doesn't exist **")
 
             else:
-                value = __class__.find_with_id(cls_name, user_id)
+                for key, value in self.my_instances.items():
+                    value = list(value)
+                    if value[0] == user_id:
+                        print(key)
+                        break
+                    else:
+                        print("** no instance found **")
+
+                """value = __class__.find_with_id(cls_name, user_id)
                 if value is None:
-                    #print("** no instance found **")
+                    print("** no instance found **")
                     print(value)
                 else:
-                    print(value)
+                    print(value)"""
 
 
     def do_destroy(self, args):

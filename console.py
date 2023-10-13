@@ -85,7 +85,7 @@ class HBNBCommand(cmd.Cmd):
                 for key, value in self.my_instances.items():
                     value = list(value)
                     if value[0] == user_id:
-                        print(key)
+                        key.__str__()
                         break
                     else:
                         print("** no instance found **")

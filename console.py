@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import cmd
-import json
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -12,18 +11,27 @@ from models.user import User
 
 """script to impliment the console"""
 
+
 class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
     """class to create the commandline using cmd"""
 
-    def do_quit(self, commands):
+    def __init__(self):
+        """initilisation phase"""
+        super().__init__()
+        self.my_instances = {}
+
+    def do_quit(self, command):
         """Quit command to exit the program"""
         return True
 
+    def do_example(self, command):
+        print(globals())
+
     def do_EOF(self):
         """End of file"""
-        print()# *
-        return True #*
+        return
+
     def emptyline(self):
         """prevents repetition of the previous command if no command is passed"""
         pass
@@ -37,9 +45,16 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
 
         else:
-            new = BaseModel()
-            new.save()
-            print("{}".format(new.id))
+            new_instance = globals()[cls_name]()
+            new_instance.save()
+            instances_name = "my_instance_{}".format(len(self.my_instances))
+            self.my_instances[instances_name] = new_instance
+            print(new_instance)
+            for key, value in self.my_instances.items():
+                if value == new_instance:
+                    print(value)
+            print("{}".format(new_instance.id))
+            print(self.my_instances)
 
     @staticmethod
     def find_with_id(cls_name, user_id):
@@ -67,12 +82,22 @@ class HBNBCommand(cmd.Cmd):
                 print("** class doesn't exist **")
 
             else:
-                value = __class__.find_with_id(cls_name, user_id)
+                for key, value in self.my_instances.items():
+                    value = list(value)
+                    if value[0] == user_id:
+                        print(key)
+                        break
+                    else:
+                        print("** no instance found **")
+
+                """value = __class__.find_with_id(cls_name, user_id)
                 if value is None:
                     print("** no instance found **")
-                else:
+
                     print(value)
 
+                else:
+                    print(value)"""
 
     def do_destroy(self, args):
         """Deletes an instance based on the class name and id (save the change into the JSON file)"""
@@ -93,14 +118,18 @@ class HBNBCommand(cmd.Cmd):
                 print("** no instance found **")
 
             else:
-                value = __class__.find_with_id(cls_name, user_id)
-                del value
+                instance_var_name = "{}.{}".format(cls_name, user_id)
+                if instance_var_name in globals():
+                    del globals()[instance_var_name]
+                    print("Instance deleted.")
+                else:
+                    print("** no instance found **")
 
     def do_all(self, cls_name):
         """Prints all string representation of all instances based or not on the class name."""
         all_instances = [obj for obj in globals().values() if isinstance(obj, type) and issubclass(obj, BaseModel)]
         if cls_name:
-            all_instances = [obj for obj in all_instances if obj.__name__ == cls_name]
+            all_instances = [obj for obj in all_instances if obj.__class__.__name__ == cls_name]
             print(all_instances)
 
         else:
@@ -126,15 +155,16 @@ class HBNBCommand(cmd.Cmd):
             print("too many arguments")
 
         else:
-             cls_name, id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
-             instance_var_name = "{}.{}".format(cls_name, id)
-             if instance_var_name in globals():
-                 instance = globals()[instance_var_name]
-                 setattr(instance, attribute_name, attribute_value)
-                 instance.save()
-                 print(instance)
-             else:
-                 print("** no instance found **")
+            cls_name, id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
+            instance_var_name = "{}.{}".format(cls_name, id)
+            if instance_var_name in globals():
+                instance = globals()[instance_var_name]
+                setattr(instance, attribute_name, attribute_value)
+                instance.save()
+                print(instance)
+            else:
+                print("** no instance found **")
+
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()

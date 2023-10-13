@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import cmd
+import json
 from models.amenity import Amenity
 from models.base_model import BaseModel
 from models.city import City
@@ -21,7 +22,8 @@ class HBNBCommand(cmd.Cmd):
 
     def do_EOF(self):
         """End of file"""
-        return
+        print()# *
+        return True #*
     def emptyline(self):
         """prevents repetition of the previous command if no command is passed"""
         pass

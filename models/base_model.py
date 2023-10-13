@@ -27,7 +27,12 @@ class BaseModel:
                             (value, '%Y-%m-%dT%H:%M:%S.%f'))
                 else:
                     setattr(self, key, value)
-            self.id = str(uuid.uuid4())
+            if 'created_at' not in kwargs:
+                self.created_at = datetime.now()
+            if 'updated_at' not in kwargs:
+                self.updated_at = datetime.now()
+            if 'id' not in kwargs:
+                self.id = str(uuid.uuid4())
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
@@ -63,10 +68,12 @@ class BaseModel:
         if '__class__' in data:
             class_name = data['__class__']
             if class_name == cls.__name__:
-                if 'created_at' in data:
-                    data['created_at'] = data['created_at']
-                if 'updated_at' in data:
-                    data['updated_at'] = data['updated_at']
+                if 'id' not in data:
+                    data['id'] = str(uuid.uuid4())
+                if 'created_at' not in data:
+                    data['created_at'] = datetime.now()
+                if 'updated_at' not in data:
+                    data['updated_at'] = datetime.now()
                 return cls(**data)
         return None
 

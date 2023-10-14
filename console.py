@@ -42,7 +42,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        elif ( 
+        elif (
                 cls_name not in globals() or not
                 isinstance(globals()[cls_name], type)
                 ):

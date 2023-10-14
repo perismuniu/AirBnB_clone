@@ -42,24 +42,7 @@ class FileStorage:
                 obj_dict = json.load(file)
                 for key, value in obj_dict.items():
                     class_name, obj_id = key.split('.')
-
-                    if class_name == 'User':
-                        obj = User.from_dict(value)
-                    elif class_name == 'State':
-                        obj = State.from_dict(value)
-                    elif class_name == 'City':
-                        obj = City.from_dict(value)
-                    elif class_name == 'Amenity':
-                        obj = Amenity.from_dict(value)
-                    elif class_name == 'Place':
-                        obj = Place.from_dict(value)
-                    elif class_name == 'Review':
-                        obj = Review.from_dict(value)
-                    elif class_name == 'BaseModel':
-                        obj = BaseModel.from_dict(value)
-                    else:
-                        obj = eval(class_name).from_dict(value)
-
+                    obj = eval(class_name).from_dict(value)
                     FileStorage.__objects[key] = obj
         except FileNotFoundError:
             pass

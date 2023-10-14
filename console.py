@@ -49,12 +49,7 @@ class HBNBCommand(cmd.Cmd):
             new_instance.save()
             instances_name = "my_instance_{}".format(len(self.my_instances))
             self.my_instances[instances_name] = new_instance
-            print(new_instance)
-            for key, value in self.my_instances.items():
-                if value == new_instance:
-                    print(value)
             print("{}".format(new_instance.id))
-            print(self.my_instances)
 
     @staticmethod
     def find_with_id(cls_name, user_id):
@@ -83,8 +78,7 @@ class HBNBCommand(cmd.Cmd):
 
             else:
                 for key, value in self.my_instances.items():
-                    new_value = list(value) 
-                    if new_value[0] == user_id:
+                    if user_id in value:
                         print(value)
                         break
                     else:
@@ -102,29 +96,35 @@ class HBNBCommand(cmd.Cmd):
 
         else:
             cls_name, user_id = args[0], args[1]
-            if cls_name not in globals() or not isinstance(globals()[cls_name], type):
-                print("** class doesn't exist **")
 
-            elif user_id not in globals() or not isinstance(globals()[user_id], type):
-                print("** no instance found **")
-
-            else:
-                instance_var_name = "{}.{}".format(cls_name, user_id)
-                if instance_var_name in globals():
-                    del globals()[instance_var_name]
-                    print("Instance deleted.")
+            keys_to_remove = []
+            for key, value in self.my_instances.items():
+                if user_id in value:
+                    keys_to_remove.append(key)
+                    for key in keys_to_remove:
+                        del self.my_instances[key]
+                    break
                 else:
                     print("** no instance found **")
-
-    def do_all(self, cls_name):
+    def do_all(self, args):
         """Prints all string representation of all instances based or not on the class name."""
-        all_instances = [obj for obj in globals().values() if isinstance(obj, type) and issubclass(obj, BaseModel)]
-        if cls_name:
-            all_instances = [obj for obj in all_instances if obj.__class__.__name__ == cls_name]
-            print(all_instances)
+
+        instances = []
+
+        if not args:
+            for key, value in self.my_instances.items():
+                instances.append(str(value))
+
+        elif args not in globals() or not isinstance(globals()[args], type):
+            print("** class doesn't exist **")
+            return
 
         else:
-            print("No instance found")
+            for key, value in self.my_instances.items():
+                if isinstance(value, globals()[args]):
+                    instances.append(str(value))
+
+        print(instances)
 
     def do_update(self, args):
         """ Updates an instance based on the class name and id by adding or updating attribute (save the change into the JSON file)."""
@@ -146,15 +146,19 @@ class HBNBCommand(cmd.Cmd):
             print("too many arguments")
 
         else:
-            cls_name, id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
-            instance_var_name = "{}.{}".format(cls_name, id)
-            if instance_var_name in globals():
-                instance = globals()[instance_var_name]
-                setattr(instance, attribute_name, attribute_value)
-                instance.save()
-                print(instance)
-            else:
-                print("** no instance found **")
+            cls_name, user_id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
+
+            if cls_name not in globals() or not isinstance(globals()[cls_name], type):
+                print("** class doesn't exist **")
+                return
+
+            for key, value in self.my_instances.items():
+                if isinstance(value, globals()[cls_name]) and value.id == user_id:
+                        setattr(value, attribute_name, attribute_value)
+                        value.save()
+                        return
+
+            print("** no instance found **")
 
 
 if __name__ == '__main__':

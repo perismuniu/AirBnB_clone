@@ -83,21 +83,12 @@ class HBNBCommand(cmd.Cmd):
 
             else:
                 for key, value in self.my_instances.items():
-                    value = list(value)
-                    if value[0] == user_id:
-                        key.__str__()
+                    new_value = list(value) 
+                    if new_value[0] == user_id:
+                        print(value)
                         break
                     else:
                         print("** no instance found **")
-
-                """value = __class__.find_with_id(cls_name, user_id)
-                if value is None:
-                    print("** no instance found **")
-
-                    print(value)
-
-                else:
-                    print(value)"""
 
     def do_destroy(self, args):
         """Deletes an instance based on the class name and id (save the change into the JSON file)"""

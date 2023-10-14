@@ -1,170 +1,158 @@
-#!/usr/bin/python3
-
-"""script to impliment the console"""
+#!/usr/bin/env python3
+"""entry to the program"""
 
 import cmd
-from models.amenity import Amenity
+import json
+from models import storage
 from models.base_model import BaseModel
+from models.user import User
+from models.state import State
 from models.city import City
+from models.amenity import Amenity
 from models.place import Place
 from models.review import Review
-from models.state import State
-from models.user import User
-import sys
 
 
 class HBNBCommand(cmd.Cmd):
-    """class to create the commandline using cmd"""
+    """class to impliment the cmd module"""
     prompt = "(hbnb) "
 
-    def __init__(self, interactive=True):
-        """initilisation phase"""
-        super().__init__()
-        self.my_instances = {}
-        self.interactive = interactive
+    valid_classes = [
+            "Amenity", "BaseModel", "City",
+            "Place", "Review", "State", "User"
+            ]
 
-    def do_quit(self, command):
-        """Quit command to exit the program"""
-        if self.interactive:
-            return True
-        exit()
-
-    def do_EOF(self, args):
-        """End of file"""
-        print()
-        exit()
-
-    def emptyline(self):
-        """prevents repetition of the previous command if no command"""
-        pass
-
-    def do_create(self, cls_name):
-        """Creates a new instance and prints the id"""
-        if not cls_name:
-            print("** class name missing **")
-            return
-
-        elif (
-                cls_name not in globals() or not
-                isinstance(globals()[cls_name], type)
-                ):
-            print("** class doesn't exist **")
-
+    def do_all(self, arg):
+        """Prints all string representations"""
+        all_instances = storage.all()
+        if not arg:
+            for instance in all_instances.values():
+                print(instance)
         else:
-            new_instance = globals()[cls_name]()
-            new_instance.save()
-            instances_name = "my_instance_{}".format(len(self.my_instances))
-            self.my_instances[instances_name] = new_instance
-            print("{}".format(new_instance.id))
-
-    def do_show(self, args):
-        """Prints the string representation of an instance"""
-        args = args.split()
-        if not args:
-            print("** class name missing **")
-        elif len(args) < 2:
-            print("** instance id missing **")
-
-        else:
-            cls_name, user_id = args[0], args[1]
-            if (
-                    cls_name not in globals() or not
-                    isinstance(globals()[cls_name], type)
-                    ):
-                print("** class doesn't exist **")
-
-            else:
-                for key, value in self.my_instances.items():
-                    if user_id in value:
-                        print(value)
-                        return
-                print("** no instance found **")
-
-    def do_destroy(self, args):
-        """Deletes an instance)"""
-        args = args.split()
-
-        if not args:
-            print("** class name missing **")
-
-        elif len(args) < 2:
-            print("** instance id missing **")
-
-        else:
-            cls_name, user_id = args[0], args[1]
-
-            keys_to_remove = []
-            for key, value in self.my_instances.items():
-                if user_id in value:
-                    keys_to_remove.append(key)
-                    for key in keys_to_remove:
-                        del self.my_instances[key]
-                    return
-            print("** no instance found **")
-
-    def do_all(self, args):
-        """Prints all string representation of all instances"""
-
-        instances = []
-
-        if not args:
-            for key, value in self.my_instances.items():
-                instances.append(str(value))
-
-        elif (
-                args not in globals() or not
-                isinstance(globals()[args], type)
-                ):
-            print("** class doesn't exist **")
-            return
-
-        else:
-            for key, value in self.my_instances.items():
-                if isinstance(value, globals()[args]):
-                    instances.append(str(value))
-
-        print(instances)
-
-    def do_update(self, args):
-        """ Updates an instance"""
-        args = args.split()
-
-        if not args:
-            print("** class name missing **")
-
-        elif len(args) < 2:
-            print("** instance id missing **")
-
-        elif len(args) < 3:
-            print("** attribute name missing **")
-
-        elif len(args) < 4:
-            print("** value missing **")
-
-        elif len(args) > 4:
-            print("too many arguments")
-
-        else:
-            cls_name, user_id, attribute_name,
-            attribute_value = args[0], args[1], args[2], args[3]
-
-            if (
-                    cls_name not in globals() or not
-                    isinstance(globals()[cls_name], type)
-                    ):
+            class_name = arg.strip()
+            if class_name not in self.valid_classes:
                 print("** class doesn't exist **")
                 return
+            else:
+                filtered_instances = {
+                        k: v for k, v in all_instances.items()
+                        if k.startswith(class_name + ".")
+                        }
+                for instance in filtered_instances.values():
+                    print(instance)
 
-            for key, value in self.my_instances.items():
-                if (
-                        isinstance(value, globals()[cls_name]) and
-                        value.id == user_id
-                        ):
-                    setattr(value, attribute_name, attribute_value)
-                    value.save()
-                    return
+    def do_create(self, arg):
+        """Creates a new instance and prints the ID."""
+        if not arg:
+            print("** class name missing **")
+            return
+        class_name = arg.strip()
+        if class_name not in self.valid_classes:
+            print("** class doesn't exist **")
+            return
 
+        new_instance = BaseModel()
+        new_instance.save()
+        print(new_instance.id)
+
+    def do_update(self, arg):
+        """Updates an instance based on the class name"""
+        if not arg:
+            print("** class name missing **")
+            return
+        args = arg.split()
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        class_name = args[0]
+        if class_name not in self.valid_classes:
+            print("** class doesn't exist **")
+            return
+
+        instance_id = args[1]
+
+        objects = storage.all()
+        key = "{}.{}".format(class_name, instance_id)
+        if key not in objects:
             print("** no instance found **")
+            return
+
+        if len(args) < 3:
+            print("** attribute name missing **")
+            return
+
+        if len(args) < 4:
+            print("** value missing **")
+            return
+
+        attribute_name = args[2]
+        attribute_value = args[3]
+        if attribute_name in ['id', 'created_at', 'updated_at']:
+            print("** cannot update id, created_at, or updated_at **")
+            return
+
+        instance = objects[key]
+        setattr(instance, attribute_name, attribute_value)
+        instance.save()
+
+    def do_destroy(self, arg):
+        """Deletes an instance based on the class name and id."""
+        if not arg:
+            print("** class name missing **")
+            return
+        args = arg.split()
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        class_name = args[0]
+        if class_name not in self.valid_classes:
+            print("** class doesn't exist **")
+            return
+
+        instance_id = args[1]
+
+        objects = storage.all()
+        key = "{}.{}".format(class_name, instance_id)
+        if key in objects:
+            del objects[key]
+            storage.save()
+        else:
+            print("** no instance found **")
+
+    def do_show(self, arg):
+        """Prints the string representation of an instance"""
+        if not arg:
+            print("** class name missing **")
+            return
+        args = arg.split()
+        if len(args) < 2:
+            print("** instance id missing **")
+            return
+        class_name = args[0]
+        if class_name not in self.valid_classes:
+            print("** class doesn't exist **")
+            return
+
+        instance_id = args[1]
+        key = "{}.{}".format(class_name, instance_id)
+        all_instances = storage.all()
+        if key in all_instances:
+            print(all_instances[key])
+        else:
+            print("** no instance found **")
+
+    def do_quit(self, arg):
+        """Exit the program."""
+        return True
+
+    def do_EOF(self, arg):
+        """Exit the program."""
+        print()
+        return True
+
+    def emptyline(self):
+        """prevents command repetition"""
+        pass
 
 
 if __name__ == '__main__':

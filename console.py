@@ -30,36 +30,32 @@ class HBNBCommand(cmd.Cmd):
 
     def do_EOF(self):
         """End of file"""
-        return
+        return True
 
     def emptyline(self):
-        """prevents repetition of the previous command if no command is passed"""
+        """prevents repetition of the previous command if no command"""
         pass
 
     def do_create(self, cls_name):
-        """Creates a new instance of BaseModel, saves it (to the JSON file) and prints the id"""
+        """Creates a new instance and prints the id"""
         if not cls_name:
             print("** class name missing **")
+            return
 
-        """elif cls_name not in globals() or not isinstance(globals()[cls_name], type):
-            print("** class doesn't exist **")"""
+        elif (
+                cls_name not in globals() or not
+                isinstance(globals()[cls_name], type)
+                ):
+            print("** class doesn't exist **")
 
-        else:
-            try:
-                new_instance = globals().get(cls_name, None)
-                obj = new_instance()
-                obj.save()
-                print(obj.id)
-            except Exception:
-                print("** class doesn't exist **")
-            """new_instance = globals()[cls_name]()
+            new_instance = globals()[cls_name]()
             new_instance.save()
             instances_name = "my_instance_{}".format(len(self.my_instances))
             self.my_instances[instances_name] = new_instance
-            print("{}".format(new_instance.id))"""
+            print("{}".format(new_instance.id))
 
     def do_show(self, args):
-        """Prints the string representation of an instance based on the class name and id"""
+        """Prints the string representation of an instance"""
         args = args.split()
         if not args:
             print("** class name missing **")
@@ -68,12 +64,10 @@ class HBNBCommand(cmd.Cmd):
 
         else:
             cls_name, user_id = args[0], args[1]
-            name = "{}.{}".format(cls_name, user_id)
-            if name not in storage.all():
-                print(""** no instance found **")
-            else:
-                print(storage.all()[new_str])
-            """if cls_name not in globals() or not isinstance(globals()[cls_name], type):
+            if (
+                    cls_name not in globals() or not
+                    isinstance(globals()[cls_name], type)
+                    ):
                 print("** class doesn't exist **")
 
             else:
@@ -82,10 +76,10 @@ class HBNBCommand(cmd.Cmd):
                         print(value)
                         break
                     else:
-                        print("** no instance found **")"""
+                        print("** no instance found **")
 
     def do_destroy(self, args):
-        """Deletes an instance based on the class name and id (save the change into the JSON file)"""
+        """Deletes an instance)"""
         args = args.split()
 
         if not args:
@@ -106,8 +100,9 @@ class HBNBCommand(cmd.Cmd):
                     break
                 else:
                     print("** no instance found **")
+
     def do_all(self, args):
-        """Prints all string representation of all instances based or not on the class name."""
+        """Prints all string representation of all instances"""
 
         instances = []
 
@@ -115,7 +110,10 @@ class HBNBCommand(cmd.Cmd):
             for key, value in self.my_instances.items():
                 instances.append(str(value))
 
-        elif args not in globals() or not isinstance(globals()[args], type):
+        elif (
+                args not in globals() or not
+                isinstance(globals()[args], type)
+                ):
             print("** class doesn't exist **")
             return
 
@@ -127,7 +125,7 @@ class HBNBCommand(cmd.Cmd):
         print(instances)
 
     def do_update(self, args):
-        """ Updates an instance based on the class name and id by adding or updating attribute (save the change into the JSON file)."""
+        """ Updates an instance"""
         args = args.split()
 
         if not args:
@@ -146,17 +144,24 @@ class HBNBCommand(cmd.Cmd):
             print("too many arguments")
 
         else:
-            cls_name, user_id, attribute_name, attribute_value = args[0], args[1], args[2], args[3]
+            cls_name, user_id, attribute_name,
+            attribute_value = args[0], args[1], args[2], args[3]
 
-            if cls_name not in globals() or not isinstance(globals()[cls_name], type):
+            if (
+                    cls_name not in globals() or not
+                    isinstance(globals()[cls_name], type)
+                    ):
                 print("** class doesn't exist **")
                 return
 
             for key, value in self.my_instances.items():
-                if isinstance(value, globals()[cls_name]) and value.id == user_id:
-                        setattr(value, attribute_name, attribute_value)
-                        value.save()
-                        return
+                if (
+                        isinstance(value, globals()[cls_name]) and
+                        value.id == user_id
+                        ):
+                    setattr(value, attribute_name, attribute_value)
+                    value.save()
+                    return
 
             print("** no instance found **")
 

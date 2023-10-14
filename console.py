@@ -41,27 +41,22 @@ class HBNBCommand(cmd.Cmd):
         if not cls_name:
             print("** class name missing **")
 
-        elif cls_name not in globals() or not isinstance(globals()[cls_name], type):
-            print("** class doesn't exist **")
+        """elif cls_name not in globals() or not isinstance(globals()[cls_name], type):
+            print("** class doesn't exist **")"""
 
         else:
-            new_instance = globals()[cls_name]()
+            try:
+                new_instance = globals().get(cls_name, None)
+                obj = new_instance()
+                obj.save()
+                print(obj.id)
+            except Exception:
+                print("** class doesn't exist **")
+            """new_instance = globals()[cls_name]()
             new_instance.save()
             instances_name = "my_instance_{}".format(len(self.my_instances))
             self.my_instances[instances_name] = new_instance
-            print("{}".format(new_instance.id))
-
-    @staticmethod
-    def find_with_id(cls_name, user_id):
-        """finds an instance based on the id"""
-        for key, value in globals().items():
-            if isinstance(value, type) and issubclass(value, BaseModel):
-                if key != cls_name:
-                    continue
-                instance_var_name = f"{key}.{user_id}"
-                if instance_var_name in globals():
-                    return globals()[instance_var_name]
-        return None
+            print("{}".format(new_instance.id))"""
 
     def do_show(self, args):
         """Prints the string representation of an instance based on the class name and id"""
@@ -73,7 +68,12 @@ class HBNBCommand(cmd.Cmd):
 
         else:
             cls_name, user_id = args[0], args[1]
-            if cls_name not in globals() or not isinstance(globals()[cls_name], type):
+            name = "{}.{}".format(cls_name, user_id)
+            if name not in storage.all():
+                print(""** no instance found **")
+            else:
+                print(storage.all()[new_str])
+            """if cls_name not in globals() or not isinstance(globals()[cls_name], type):
                 print("** class doesn't exist **")
 
             else:
@@ -82,7 +82,7 @@ class HBNBCommand(cmd.Cmd):
                         print(value)
                         break
                     else:
-                        print("** no instance found **")
+                        print("** no instance found **")"""
 
     def do_destroy(self, args):
         """Deletes an instance based on the class name and id (save the change into the JSON file)"""

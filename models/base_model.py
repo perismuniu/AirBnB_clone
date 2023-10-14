@@ -65,8 +65,10 @@ class BaseModel:
             if class_name == cls.__name__:
                 if 'created_at' in data:
                     data['created_at'] = data['created_at']
+
                 if 'updated_at' in data:
                     data['updated_at'] = data['updated_at']
+
                 return cls(**data)
         return None
 

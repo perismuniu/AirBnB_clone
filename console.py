@@ -42,12 +42,13 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        elif (
+        elif ( 
                 cls_name not in globals() or not
                 isinstance(globals()[cls_name], type)
                 ):
             print("** class doesn't exist **")
 
+        else:
             new_instance = globals()[cls_name]()
             new_instance.save()
             instances_name = "my_instance_{}".format(len(self.my_instances))

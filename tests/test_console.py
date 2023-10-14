@@ -1,12 +1,15 @@
+#!/usr/bin/python3
+"""Defines unittests for console.py"""
+
 import unittest
 from unittest.mock import patch
 from io import StringIO
 from models.base_model import BaseModel
 from console import HBNBCommand
 
-"""module for testing the console"""
 
 class TestHBNBCommand(unittest.TestCase):
+    """Tests testing console.py"""
 
     def setUp(self):
         """setup the unnitests"""
@@ -57,12 +60,13 @@ class TestHBNBCommand(unittest.TestCase):
         self.hbnb_command.my_instances["test_instance"] = base_model_instance
 
         with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
-            self.hbnb_command.onecmd("update BaseModel test_instance name John")
+            self.hbnb_command.onecmd("update BaseModel\
+                    test_instance name John")
             output = mock_stdout.getvalue().strip()
             self.assertTrue(output.startswith("**"))
             self.assertIn("updated", output)
             self.assertEqual(base_model_instance.name, "John")
 
+
 if __name__ == '__main__':
     unittest.main()
-

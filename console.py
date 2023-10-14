@@ -77,9 +77,8 @@ class HBNBCommand(cmd.Cmd):
                 for key, value in self.my_instances.items():
                     if user_id in value:
                         print(value)
-                        break
-                    else:
-                        print("** no instance found **")
+                        return
+                print("** no instance found **")
 
     def do_destroy(self, args):
         """Deletes an instance)"""
@@ -100,9 +99,8 @@ class HBNBCommand(cmd.Cmd):
                     keys_to_remove.append(key)
                     for key in keys_to_remove:
                         del self.my_instances[key]
-                    break
-                else:
-                    print("** no instance found **")
+                    return
+            print("** no instance found **")
 
     def do_all(self, args):
         """Prints all string representation of all instances"""

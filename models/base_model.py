@@ -75,19 +75,14 @@ class BaseModel:
         Returns a string representation of the object.
         """
         class_name = self.__class__.__name__
-        return "[{}] ({}) {}".format(class_name, self.id, self.__dict__)
-
-    def __iter__(self):
-        self.attribute_values = list(self.__dict__.values())
-        self._index = 0
-        return self
+        return "[{i}] ({}) {}".format(class_name, self.id, self.__dict__)
 
     def __next__(self):
         if not hasattr(self, '_index'):
             raise StopIteration
 
-        if self._index <len(self._attribute_values):
-                result = self._attribute_values[self._index]
+        if self._index <len(self.attribute_values):
+                result = self.attribute_values[self._index]
                 self._index += 1
                 return result
         else:

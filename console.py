@@ -8,6 +8,7 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
+import sys
 
 """script to impliment the console"""
 
@@ -16,21 +17,22 @@ class HBNBCommand(cmd.Cmd):
     prompt = "(hbnb) "
     """class to create the commandline using cmd"""
 
-    def __init__(self):
+    def __init__(self, interactive=True):
         """initilisation phase"""
         super().__init__()
         self.my_instances = {}
+        self.interactive = interactive
 
     def do_quit(self, command):
         """Quit command to exit the program"""
-        return True
+        if self.interactive:
+            return True
+        exit()
 
-    def do_example(self, command):
-        print(globals())
-
-    def do_EOF(self):
+    def do_EOF(self, args):
         """End of file"""
-        return True
+        print()
+        exit()
 
     def emptyline(self):
         """prevents repetition of the previous command if no command"""
@@ -42,7 +44,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        elif ( 
+        elif (
                 cls_name not in globals() or not
                 isinstance(globals()[cls_name], type)
                 ):

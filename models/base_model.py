@@ -81,9 +81,34 @@ class BaseModel:
         if not hasattr(self, '_index'):
             raise StopIteration
 
+<<<<<<< HEAD
         if self._index <len(self.attribute_values):
+=======
+        if self._index < len(self.attribute_values):
+            result = self.attribute_values[self._index]
+            self._index += 1
+
+            # Check if the attribute is a datetime object and format it
+            if isinstance(result, datetime):
+                result = result.isoformat()
+
+            return result
+        else:
+            raise StopIteration
+
+    """def __iter__(self):
+        self.attribute_values = list(self.__dict__.values())
+        self._index = 0
+        return self
+
+    def __next__(self):
+        if not hasattr(self, '_index'):
+            raise StopIteration
+
+        if self._index < len(self.attribute_values):
+>>>>>>> master
                 result = self.attribute_values[self._index]
                 self._index += 1
                 return result
         else:
-                raise StopIteration
+                raise StopIteration"""

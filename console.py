@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+"""script to impliment the console"""
+
 import cmd
 from models.amenity import Amenity
 from models.base_model import BaseModel
@@ -10,12 +12,10 @@ from models.state import State
 from models.user import User
 import sys
 
-"""script to impliment the console"""
-
 
 class HBNBCommand(cmd.Cmd):
-    prompt = "(hbnb) "
     """class to create the commandline using cmd"""
+    prompt = "(hbnb) "
 
     def __init__(self, interactive=True):
         """initilisation phase"""
